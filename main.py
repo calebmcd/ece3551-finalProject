@@ -9,8 +9,6 @@ latestState = 0
 p = Pulsesensor()
 p.startAsyncBPM()
 
-file = open("workoutBPM.txt", 'w')
-
 def setup():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
@@ -18,13 +16,15 @@ def setup():
     
 def swButton(ev=None):
     global latestState
+    global p
+    
+    bpm = p.BPM
+    
     latestState = not latestState
-    if latestState == 0:
-        print('Button Depressed')
-    else:
-        global p.BPM
-        bpm = p.BPM
-        print('Button Pressed')
+    
+    while (latestState):
+        file = open("workoutBPM.txt", 'w')
+        #print('Button Pressed')
         if bpm > 0:
             print("BPM: %d" % bpm)
             file.write("hi")
