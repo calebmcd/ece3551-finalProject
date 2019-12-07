@@ -36,4 +36,4 @@ def send_data(time,cal,fat,minHR,maxHR,avgHR):
 
 # time, cal, fat, minHR, maxHR, avgHR
 
-send_data(5.3,123,78,62,167,122)
+send_data(23.8,1269,78,12,167,12)
