@@ -1,6 +1,8 @@
 from pulsesensor import Pulsesensor
 import time
 import RPi.GPIO as GPIO
+import os
+import requests
 
 button = 23
 
@@ -41,6 +43,15 @@ def destroy():
     p.stopAsyncBPM()
     GPIO.cleanup()
     file.close()
+    
+def send_data(time,cal,fat,minHR,maxHR,avgHR):
+     
+     url='http://pi.calebmcd.com:1880/data'
+     payload = {'time':time,'cal':cal,'fat':fat,'minHR':minHR,'maxHR':maxHR,'avgHR':avgHR}
+     #payload = [time,cal,fat,minHR,maxHR,avgHR]
+     
+     r = requests.post(url, json=payload)
+     print(r.status_code)
     
 if __name__ == '__main__':
     setup()
