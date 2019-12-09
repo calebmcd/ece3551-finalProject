@@ -3,10 +3,18 @@ import time
 import RPi.GPIO as GPIO
 import os
 import requests
+import pandas as pd
+import pickle
 
 button = 23
 
-latestState = 0
+toggle = False
+
+a = ['BPM test']
+a
+['BPM test']
+
+fileName = "BPMtest"
 
 p = Pulsesensor()
 p.startAsyncBPM()
@@ -15,29 +23,33 @@ def setup():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    
+
 def swButton(ev=None):
-    global latestState
+    global toggle
+    
+    if toggle:
+        print('Stopping Readings....')
+    else:
+        print('Starting Readings....')
+    
+    toggle = not toggle
+    
+def loop():
     global p
+    global toggle
     
-    bpm = p.BPM
-    
-    latestState = not latestState
-    
-    while (latestState):
+    if(toggle == True):
+        bpm = p.BPM
+
         file = open("workoutBPM.txt", 'w')
         #print('Button Pressed')
         if bpm > 0:
             print("BPM: %d" % bpm)
             file.write("hi")
-            time.sleep(1)
+            time.sleep(0.5)
         else:
             print("No Heartbeat found")
-
-def loop():
-    GPIO.add_event_detect(button, GPIO.FALLING, callback=swButton, bouncetime=200)
-    while True:
-        time.sleep(1)
+            time.sleep(1)
 
 def destroy():
     p.stopAsyncBPM()
@@ -52,10 +64,14 @@ def send_data(time,cal,fat,minHR,maxHR,avgHR):
      
      r = requests.post(url, json=payload)
      print(r.status_code)
-    
+
 if __name__ == '__main__':
     setup()
+    GPIO.add_event_detect(button, GPIO.FALLING, callback=swButton, bouncetime=200)
+
+while True:
     try:
         loop()
+        time.sleep(0.5)
     except KeyboardInterrupt:
         destroy()
