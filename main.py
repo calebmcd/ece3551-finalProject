@@ -11,12 +11,6 @@ button = 23
 
 toggle = False
 
-a = ['BPM test']
-a
-['BPM test']
-
-fileName = "BPMtest"
-
 p = Pulsesensor()
 p.startAsyncBPM()
 
@@ -27,29 +21,53 @@ def setup():
 
 def swButton(ev=None):
     global toggle
+    global tStart
+    global tStop
+    global totalTime
     
     if toggle:
         print('Stopping Readings....')
+        
+        tStop = time.perf_counter()
+        totalTime = tStop-tStart
+        
+        timeFile = open('time','wb')
+        newTime = pickle.dump(totalTime,timeFile)
+        timeFile.close()
+        
+        #destroy()
         time.sleep(1)
         process()
     else:
         print('Starting Readings....')
+        tStart = time.perf_counter()
     
     toggle = not toggle
+    
+
+    
+#def read():
+    #readFile = open('allBPM', 'rb')
+    #new_dict = pickle.load(readFile)
+    #readFile.close()
+    #print(new_dict)
+    
     
 def loop():
     global p
     global toggle
+    global bpmFile
     
     if toggle:
         bpm = p.BPM
-
-        file = open("workoutBPM.txt", 'w')
+        
         #print('Button Pressed')
         if bpm > 0:
+            bpmFile = open('allBPM','wb')
             print("BPM: %d" % bpm)
-            file.write("hi")
-            time.sleep(0.5)
+            #strBPM = str(bpm)
+            pickle.dump(bpm, bpmFile)
+            time.sleep(1)
         else:
             print("No Heartbeat found")
             time.sleep(1)
@@ -57,16 +75,7 @@ def loop():
 def destroy():
     p.stopAsyncBPM()
     GPIO.cleanup()
-    file.close()
-    
-def send_data(time,cal,fat,minHR,maxHR,avgHR):
      
-     url='http://pi.calebmcd.com:1880/data'
-     payload = {'time':time,'cal':cal,'fat':fat,'minHR':minHR,'maxHR':maxHR,'avgHR':avgHR}
-     #payload = [time,cal,fat,minHR,maxHR,avgHR]
-     
-     r = requests.post(url, json=payload)
-     print(r.status_code)
 
 if __name__ == '__main__':
     setup()
