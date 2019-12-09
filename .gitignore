@@ -1,5 +1,3 @@
 
-calcData.txt
-receivedData.txt
-testfile
-pickleTest
+*.txt
+*.json
