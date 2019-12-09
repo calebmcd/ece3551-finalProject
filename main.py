@@ -5,6 +5,7 @@ import os
 import requests
 import pandas as pd
 import pickle
+from manageData import process
 
 button = 23
 
@@ -29,6 +30,8 @@ def swButton(ev=None):
     
     if toggle:
         print('Stopping Readings....')
+        time.sleep(1)
+        process()
     else:
         print('Starting Readings....')
     
@@ -38,7 +41,7 @@ def loop():
     global p
     global toggle
     
-    if(toggle == True):
+    if toggle:
         bpm = p.BPM
 
         file = open("workoutBPM.txt", 'w')

@@ -1,7 +1,9 @@
 import requests
 import os
 import json
-
+import statistics
+import pandas as pd
+import pickle
 
 #def store_data(dataSet):
 #    data_to_send = {}
@@ -18,7 +20,12 @@ import json
 #    
 #    with open('calcData.txt', 'w') as outfile:
 #        json.dump(data_to_send, outfile)
+def saveData():
     
+
+def calculate():
+    print('Completing Calculations....')
+
 def send_data(time,cal,fat,minHR,maxHR,avgHR):
      
      url='http://pi.calebmcd.com:1880/data'
@@ -28,7 +35,9 @@ def send_data(time,cal,fat,minHR,maxHR,avgHR):
      r = requests.post(url, json=payload)
      print(r.status_code)
 
-
+def process():
+    print('Entered Processing')
+    
 #.....
 #.....
 #.....
@@ -36,4 +45,4 @@ def send_data(time,cal,fat,minHR,maxHR,avgHR):
 
 # time, cal, fat, minHR, maxHR, avgHR
 
-send_data(23.8,1269,78,12,167,12)
+#send_data(23.8,1269,78,12,167,12)
