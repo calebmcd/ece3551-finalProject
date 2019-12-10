@@ -1,32 +1,33 @@
 import requests
 import os
 import json
-import statistics
+from statistics import mean
 import pandas as pd
 import pickle
+
+#url = 'http://pi.calebmcd.com:8000/'
+url = 'http://50.89.231.68:8000'
 
 def pullData():
     
     global userData
+    global url
     
-    url = 'http://192.168.50.13:8000/pulldata'
-    
-    userData = (requests.get(url)).json()
+    userData = (requests.get(url + '/pulldata')).json()
     
     
 def calculate():
     global userData
+    bpmPath = 'bpmFile.pickle'
     
     pullData()
     
     print('Completing Calculations....')
-    readFile = open('allBPM', 'rb')
-    new_dict = pickle.load(readFile)
-    readFile.close()
+    with open(bpmPath, 'rb') as lfi:
+        totalBPM = pickle.load(lfi)
     
-    readTimeFile = open('time', 'rb')
-    timeDict = pickle.load(readTimeFile)
-    readTimeFile.close()
+    with open('time', 'rb') as lt:
+        timeDict = pickle.load(lt)
     
     #readUserData = open('userSettings', 'rb')
     #UserData = pd.read_pickle(
@@ -35,7 +36,7 @@ def calculate():
     weight = userData['weight']
     
     time = (timeDict/60)
-    avgHR = new_dict
+    avgHR = mean(totalBPM)
     
     calBurnedMale = ((age*0.2017)+(avgHR*0.6309)-(weight*0.09036)-55.0969)*(timeDict/4.184)
     fatBurnedMale = (calBurnedMale/3500)
@@ -48,7 +49,7 @@ def calculate():
     print("Your average heart rate was ", round(avgHR, 4))
     
     os.remove('time')
-    os.remove('allBPM')
+    os.remove(bpmPath)
     
     Stats = [round(time,2),round(calBurnedMale,4),round(fatBurnedMale,4),round(calBurnedFemale,4),round(fatBurnedFemale,4),round(avgHR,4)]
     return Stats
@@ -57,11 +58,11 @@ def calculate():
 def send_data(statArray):
     
     global userData
+    global url
     
-    url = 'http://192.168.50.13:8000/data'
     payload = {'time':statArray[0],'calMale':statArray[1],'fatMale':statArray[2],'calFemale':statArray[3],'fatFemale':statArray[4],'avgHR':statArray[5],'gender':userData['gender']}
      
-    requests.post(url, json=payload)
+    requests.post(url + '/data', json=payload)
 
 def process():
     print('Calculating Data.....')
